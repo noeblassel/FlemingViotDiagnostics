@@ -58,7 +58,7 @@ end
 """
     run_epoch!(run, n) -> losses
 
-Runs optimization on `n` training batches (with parameters specified by `run`); returns the training loss at each step.
+optimization for "one epoch" of `n` training batches (with parameters specified by `run`); returns the training loss at each step.
 """
 function run_epoch!(run::TrainingRun, n)
     trainmode!(run.model)

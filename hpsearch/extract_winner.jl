@@ -1,3 +1,6 @@
+## Author: Blassel
+## Last modified: Oct 5th 2026
+
 # Writes models/hpsearch_winner.jld2 from the results of the NePS hyperparameter search
 # usage: (from the repo root)   julia --project=hpsearch hpsearch/extract_winner.jl [hpsearch results path]
 

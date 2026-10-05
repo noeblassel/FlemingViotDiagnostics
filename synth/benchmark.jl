@@ -48,7 +48,7 @@ function score_cell(model, input_dim, k, βlims, potential_kwargs; num_batches)
 end
 
 """
-runs the experiment and saves to a JLD2 shard for this cell
+runs the experiment and saves to a JLD2 the results for this cell and prior variant
 """
 function main(args = ARGS)
     name = getarg(args, "variant", "indist")

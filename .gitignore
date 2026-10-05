@@ -1,3 +1,4 @@
-/data
-!/data/README.md
-/output
+data/
+!data/README.md
+output/
+hpsearch/.CondaPkg/

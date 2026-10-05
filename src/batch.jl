@@ -1,3 +1,6 @@
+# Author: Noe Blassel
+# Last modified: Oct 5 2026
+
 const _PAD = -1.0f0 # padding value for out-of-sequence elements
 
 """

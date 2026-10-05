@@ -1,3 +1,6 @@
+# Author: Noe Blassel
+# Last modified: Oct 5 2026
+
 """
     TrainingRun(; rng, βlims, opt_state, model, hp, input_dim, pot_per_batch, trace_per_pot,
                 cut_per_trace, stride_lims, Nreplicas_lims)

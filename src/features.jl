@@ -1,3 +1,5 @@
+# Author: Noe Blassel
+# Last modified: Oct 5 2026
 
 @inline get_bin(val, minval, maxval, nbins) =
     1 + clamp(floor(Int, nbins * (val - minval) / (maxval - minval)), 0, nbins - 1) # histogram bin index

@@ -1,3 +1,6 @@
+# Author: Noe Blassel
+# Last modified: Oct 5 2026
+
 """
     sim_fv(V′, D, D′, dt, β, Nrep, nsteps, stride, x0, rng)
 

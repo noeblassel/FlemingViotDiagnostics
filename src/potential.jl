@@ -1,3 +1,6 @@
+# Author: Noe Blassel
+# Last modified: Oct 5 2026
+
 """
     generate_potential(; n_points = 1000, clims = (0.15, 0.85), δlims = (0.0, 0.2),
                        κlims = (0.2, 0.6), logσlims = (-4, -1), mmax = 6,

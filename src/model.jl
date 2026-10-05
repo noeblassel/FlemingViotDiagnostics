@@ -1,3 +1,6 @@
+# Author: Noe Blassel
+# Last modified: Oct 5 2026
+
 struct CNNFeaturizer{S <: Chain}
     encoder::S
     output_dim::Int

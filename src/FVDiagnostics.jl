@@ -1,3 +1,6 @@
+# Author: Noe Blassel
+# Last modified: Oct 5 2026
+
 module FVDiagnostics
 
 using Random, Statistics, LinearAlgebra, SparseArrays

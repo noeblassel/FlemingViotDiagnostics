@@ -69,7 +69,7 @@ function evaluate_pipeline(; pipeline_directory, previous_pipeline_directory, ep
 
     epochs_done = 0
     if prev_dir !== nothing && isfile(joinpath(prev_dir, CHECKPOINT_NAME))
-        ckpt = JLD2.load(joinpath(prev_dir, CHECKPOINT_NAME)) # thaw a previous model
+        ckpt = JLD2.load(joinpath(prev_dir, CHECKPOINT_NAME)) # thaws a training run
         Flux.loadmodel!(run.model, ckpt["model_state"])
         run.opt_state = Flux.setup(Adam(c.learning_rate), run.model)
         epochs_done = ckpt["epoch"]
@@ -81,7 +81,7 @@ function evaluate_pipeline(; pipeline_directory, previous_pipeline_directory, ep
     println("  test loss ", round(result.loss; digits = 4), ", accuracy ", round(100result.acc; digits = 1), "%")
 
     mkpath(pipe_dir)
-    jldsave(joinpath(pipe_dir, CHECKPOINT_NAME); model_state = Flux.state(run.model), epoch = epochs, hp = hp) # freeze a model
+    jldsave(joinpath(pipe_dir, CHECKPOINT_NAME); model_state = Flux.state(run.model), epoch = epochs, hp = hp) # freezes a training run
     return pydict(Dict("objective_to_minimize" => result.loss, "cost" => epochs - epochs_done))
 end
 

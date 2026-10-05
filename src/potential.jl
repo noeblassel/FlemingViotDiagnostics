@@ -6,12 +6,12 @@
 Samples a potential `V` and a diffusion profile `D` on (0, 1) from the prior distribution, specified by
 - `clims`, `κlims`: centre and width ranges for the Gaussian main well
 - `δlims`: range for the internal barrier heights, and for the boundary energy difference
-- `logσlims`: logarithmic scale for the diffusion profile `D`
+- `logσlims`: range of logarithmic scales for the diffusion profile `D`
 - `mmax`: maximum number of perturbations in `V` and in `D`
 - `poneWell`: probability of no internal barriers in `V`
 - `pconstD`: probability of no perturbation in `D`
 
-The parameter `n_points` is used to sample min/max values for normalization.
+The parameter `n_points` is used to sample min/max values for normalization of `V` and `D`
 Returns a tuple of closures `(V, D, V′, D′)`
 
 """

@@ -1,7 +1,7 @@
 # Author: Noe Blassel
 # Last modified: Oct 5th 2026
 
-# Convenience script to print a summary of a model checkpoint to the terminal
+# Convenience script to print a summary of a model's architecture to the terminal
 
 # usage : (from repo root)  julia --project=. models/describe.jl [models/deployed.jld2]
 

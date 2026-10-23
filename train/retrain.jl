@@ -1,12 +1,12 @@
 # Author: Noe Blassel
-# Last modified: Oct 5 2026
+# Last modified: Oct 23 2026
 
 # Trains a model from a checkpointed model on new batches, with a new optimizer (Adam) state.
 # usage : (from repo root)  julia --project=. -t auto train/retrain.jl [source.jld2] [key=value ...]
 
-# Keyword arguments: lr, epochs, seed, train_batches, test_batches, pot_per_batch, trace_per_pot,
-# cut_per_trace, stride_lo, stride_hi, Nreplicas_lo, Nreplicas_hi, beta_lo, beta_hi,
-# val_every, output.
+# Keyword arguments: lr, lr_end, epochs, replicate, train_batches, test_batches, pot_per_batch,
+# trace_per_pot, cut_per_trace, stride_lo, stride_hi, Nreplicas_lo, Nreplicas_hi, beta_lo, beta_hi,
+# val_every, output. The learning rate decays from lr to lr_end with a cosine profile over the epochs;
 
 # (see parse_args and src/* for advanced usage)
 
@@ -22,10 +22,11 @@ function parse_args(args)
     source = isempty(pos) ? joinpath(ROOT, "models", "hpsearch_winner.jld2") : pos[1]
     return (source = source,
             lr = get_val("lr", 5e-4),
-            epochs = get_val("epochs", 50),
-            seed = get_val("seed", 2026),
+            lr_end = get_val("lr_end", 5e-5),
+            epochs = get_val("epochs", 150),
+            replicate = get_val("replicate", 1),
             train_batches = get_val("train_batches", 50),
-            test_batches = get_val("test_batches", 50),
+            test_batches = get_val("test_batches", 200),
             pot_per_batch = get_val("pot_per_batch", 5),
             trace_per_pot = get_val("trace_per_pot", 5),
             cut_per_trace = get_val("cut_per_trace", 2),
@@ -42,7 +43,8 @@ function main(args = ARGS)
     println("source $(cfg.source), $(sum(length, Flux.trainables(model))) parameters, input_dim $input_dim")
     println(cfg)
 
-    run = TrainingRun(rng = Xoshiro(cfg.seed), βlims = cfg.betalims, opt_state = Flux.setup(Adam(cfg.lr), model),
+    run = TrainingRun(rng = Xoshiro(hash((:retrain, cfg.replicate))), βlims = cfg.betalims,
+                      opt_state = Flux.setup(Adam(cfg.lr), model),
                       model = model, hp = hp, input_dim = input_dim, pot_per_batch = cfg.pot_per_batch,
                       trace_per_pot = cfg.trace_per_pot, cut_per_trace = cfg.cut_per_trace,
                       stride_lims = cfg.stride_lims, Nreplicas_lims = cfg.Nreplicas_lims)
@@ -50,24 +52,27 @@ function main(args = ARGS)
     best_val_loss = Inf
     best_epoch = 0
     best_state = nothing
+    run_config = Base.structdiff(cfg, NamedTuple{(:val_every, :output)})
+    save() = jldsave(cfg.output; model_state = best_state, hp = hp, lr = cfg.lr, best_epoch = best_epoch,
+                     best_val_loss = best_val_loss, run_config = run_config)
     for epoch in 1:cfg.epochs
+        lr = cfg.lr_end + (cfg.lr - cfg.lr_end) * (1 + cospi((epoch - 1) / max(cfg.epochs - 1, 1))) / 2
+        Flux.adjust!(run.opt_state, lr)
         train_loss = mean(run_epoch!(run, cfg.train_batches))
         if epoch % cfg.val_every == 0 || epoch == cfg.epochs
             acc, val_loss = test_accuracy!(run, cfg.test_batches)
             if val_loss < best_val_loss
                 best_val_loss, best_epoch, best_state = val_loss, epoch, deepcopy(Flux.state(model))
+                save()
             end
-            println("epoch $epoch  train $(round(train_loss; digits = 4))  val $(round(val_loss; digits = 4))  ",
-                    "acc $(round(100acc; digits = 1))%")
+            println("epoch $epoch  lr $(round(lr; sigdigits = 3))  train $(round(train_loss; digits = 4))  ",
+                    "val $(round(val_loss; digits = 4))  acc $(round(100acc; digits = 1))%")
         else
-            println("epoch $epoch  train $(round(train_loss; digits = 4))")
+            println("epoch $epoch  lr $(round(lr; sigdigits = 3))  train $(round(train_loss; digits = 4))")
         end
         flush(stdout)
     end
 
-    run_config = Base.structdiff(cfg, NamedTuple{(:val_every, :output)})
-    jldsave(cfg.output; model_state = best_state, hp = hp, lr = cfg.lr, best_epoch = best_epoch,
-            best_val_loss = best_val_loss, run_config = run_config)
     println("best epoch $best_epoch, val $(round(best_val_loss; digits = 4)). Result saved to $(cfg.output)")
 end
 

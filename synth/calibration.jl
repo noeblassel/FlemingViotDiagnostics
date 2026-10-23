@@ -1,5 +1,5 @@
 # Author: Noe Blassel
-# Last modified: Oct 5th 2026
+# Last modified: Oct 23 2026
 
 # gathers data for the risk calibration experiment (see Figures 9 and 10)
 # usage (from repo root)   julia --project=. -t auto synth/calibration.jl

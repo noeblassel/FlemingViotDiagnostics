@@ -1,7 +1,8 @@
 # Author: Noe Blassel
-# Last modified: Oct 5 2026
+# Last modified: Oct 23 2026
 
 const _PAD = -1.0f0 # padding value for out-of-sequence elements
+const T_GT_MAX = 100.0 # longest resolvable reference decorrelation time
 
 """
     draw_system(rng; βlims, Ngrid, tau_gt, potential_kwargs)
@@ -83,9 +84,9 @@ function simulate_traces(rng, sys; ntrace, stride_lims, Nreplicas_lims, Ngrid, d
         while !success
             try
                 x0 = (ix_j + 1) / (Ngrid + 2)
-                k_gt = conv_tv(sys.P_gt, sys.ν, ix_j, tol)
+                k_gt = conv_tv(sys.P_gt, sys.ν, ix_j, tol; max_iter = ceil(Int, T_GT_MAX / tau_gt))
                 k_gt < 0 && throw(ErrorException("ground truth failed to converge"))
-                T_conv = max(2, k_gt) * tau_gt # honest decorrelation time
+                T_conv = k_gt * tau_gt # honest decorrelation time
                 nframes_target = max(min_length, round(Int, ncorr * T_conv / (stride_j * dt)))
                 local_fv = sim_fv(sys.W′, sys.D, sys.D′, dt, sys.β, Nreplicas_j,
                                   nframes_target * stride_j, stride_j, x0, local_rng)
@@ -118,7 +119,7 @@ function simulate_traces(rng, sys; ntrace, stride_lims, Nreplicas_lims, Ngrid, d
 end
 
 """
-    get_batch(rng; tol = 0.05, Ngrid = 100, βlims = (1.0, 3.0), dt = 1e-3, tau_gt = 0.1,
+    get_batch(rng; tol = 0.05, Ngrid = 100, βlims = (1.0, 3.0), dt = 1e-3, tau_gt = 0.01,
               stride_lims = (10, 200), Nreplicas_lims = (10, 200), input_dim = 64, ntrace = 5,
               ncut = 1, npot = 5, min_length = 5, ncorr = 2, max_attempts = 10,
               potential_kwargs = NamedTuple())
@@ -133,7 +134,7 @@ Keyword arguments:
 - `tau_gt`: lag parameter for reference decorrelation times
 - `stride_lims` : range of strides between frames. Design lag τ = `stride_lims * dt`
 - `Nreplicas_lims` : range for the (random) number of replicas
-- `input_dim`: number of histogram bins
+- `input_dim`: number of histogram binsq
 - `ntrace`: number of Fleming-Viot simulations per system
 - `ncut`: number of random cuts per trace (samples of `L`) between the decorrelation frame and the last frame.` ncut=0` computes whole feature sequences
 - `npot`: number of systems sampled per batch
@@ -158,7 +159,7 @@ function get_batch(rng;
         Ngrid = 100,
         βlims = (1.0, 3.0),
         dt = 1e-3,
-        tau_gt::Float64 = 0.1,
+        tau_gt::Float64 = 0.01,
         stride_lims::Tuple{Int, Int} = (10, 200),
         Nreplicas_lims::Tuple{Int, Int} = (10, 200),
         input_dim = 64,

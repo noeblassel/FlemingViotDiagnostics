@@ -1,5 +1,5 @@
 # Author: Noe Blassel
-# Last modified: October 5 2026
+# Last modified: October 23 2026
 
 # Generates the dataset for the hyperparameter search and saves it to $REPO_ROOT/data/hpsearch/hp_dataset.jld2
 # 1000 Fleming–Viot traces
@@ -14,7 +14,7 @@ using JLD2, Random, Statistics, ProgressMeter
 const DATA = normpath(joinpath(@__DIR__, "..", "data", "hpsearch"))
 
 function generate_offline_dataset(rng; npot = 200, ntrace = 5, ncorr = 3, tol = 0.05, Ngrid = 100,
-                                  βlims = (1.0, 3.0), dt = 1e-3, tau_gt = 0.1, stride_lims = (10, 200),
+                                  βlims = (1.0, 3.0), dt = 1e-3, tau_gt = 0.01, stride_lims = (10, 200),
                                   Nreplicas_lims = (10, 200), min_length = 5, max_attempts = 10)
     traces = []
     i = 0
@@ -38,9 +38,9 @@ subset(ds, idx) = (sequences = ds.sequences[idx], labels = ds.labels[idx], Nrepl
                    strides = ds.strides[idx], T_convs = ds.T_convs[idx], dt = ds.dt)
 
 function main()
-    ds = generate_offline_dataset(Xoshiro(2026))
+    ds = generate_offline_dataset(Xoshiro(hash(:hp_dataset)))
     n = length(ds.sequences)
-    perm = randperm(Xoshiro(2026), n)
+    perm = randperm(Xoshiro(hash(:hp_split)), n)
     ntrain = round(Int, 0.8n)
     mkpath(DATA)
     jldsave(joinpath(DATA, "hp_dataset.jld2"); train = subset(ds, perm[1:ntrain]), test = subset(ds, perm[(ntrain + 1):end]))

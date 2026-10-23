@@ -2,3 +2,4 @@ data/
 !data/README.md
 output/
 hpsearch/.CondaPkg/
+models/hpsearch_winner.jld2

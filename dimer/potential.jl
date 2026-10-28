@@ -31,8 +31,6 @@ end
 @inline w_of_r(r) = w_of_s(s_of_r(r))
 @inline dw_dr(r) = dw_ds(s_of_r(r)) / s_denom
 
-width_Ω
-
 # finds saddle points of W by root-searching dichotomy on the derivative dW
 function w_saddles(; ngrid::Int = 20_001)
     srange = range(-0.999, 0.999; length = ngrid)

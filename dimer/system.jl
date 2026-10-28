@@ -45,9 +45,6 @@ function soft_ncoord(coords, boundary)
     return n
 end
 
-@inline ξ(r) = (r - r_L) / width_Ω
-@inline in_metastable_state(r) = r_L < r < r_R
-
 ## Molly functions
 struct DimerInteraction end
 

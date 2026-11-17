@@ -1,7 +1,7 @@
 # Author: Noe Blassel
 # Last modified: Nov 17 2026
 
-# 
+# system preparation utilities
 
 using Random, LinearAlgebra
 isdefined(@__MODULE__, :dimer_system) || include(joinpath(@__DIR__, "system.jl"))

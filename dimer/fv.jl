@@ -1,5 +1,5 @@
 # Author: Noe Blassel
-# Last modified: Oct 28 2026
+# Last modified: Nov 17 2026
 
 # solvated dimer simulations of the fleming-viot particle system
 

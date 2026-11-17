@@ -1,5 +1,5 @@
 # Author: Noe Blassel
-# Last modified: Oct 28 2026
+# Last modified: Nov 17 2026
 
 # shared parameters for the dimer experiments of (https://arxiv.org/abs/2610.36078, Section 4.4.)
 
@@ -16,7 +16,7 @@ Experimental settings:
 const settings = Dict("slow" => (d_dimer = 0.05, stride_ref = 40, hold = 0.2, nc_range = (4.0, 10.0)),
                   "fast" => (d_dimer = 1.0, stride_ref = 25, hold = 0.05, nc_range = (4.0, 10.0)))
 
-function arm(name::AbstractString)
+function setting(name::AbstractString)
     haskey(settings, name) || throw(ArgumentError("unknown setting \"$name\", expected one of $(collect(keys(settings)))"))
     return settings[name]
 end
